@@ -150,7 +150,7 @@ public:
         consensus.nStakeMinAge = 60 * 60;
         consensus.nStakeMinDepth = 10;
         consensus.nTargetTimespan = 1 * 60;
-        consensus.nTargetTimespanV2 = 30 * 60;
+        consensus.nTargetTimespanV2 = consensus.nTargetTimespan;
         consensus.nTargetSpacing = 2 * 60;
         consensus.nTimeSlotLength = 15;
 
@@ -164,7 +164,7 @@ public:
         consensus.height_start_BIP65 = disabled;
         consensus.height_start_InvalidUTXOsCheck = disabled;
         consensus.height_start_MessSignaturesV2 = disabled;
-        consensus.height_start_StakeModifierNewSelection = 1;
+        consensus.height_start_StakeModifierNewSelection = 99999999;
         consensus.height_start_StakeModifierV2 = disabled;
         consensus.height_start_TimeProtoV2 = disabled;
         consensus.height_start_ZC = disabled;

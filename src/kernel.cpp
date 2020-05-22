@@ -97,7 +97,7 @@ static bool SelectBlockFromCandidates(
 
         //if the lowest block height (vSortedByTimestamp[0]) is >= switch height, use new modifier calc
         if (fFirstRun){
-            fModifierV2 = true;
+            fModifierV2 = false;
             fFirstRun = false;
         }
 
@@ -277,7 +277,9 @@ uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutInde
 {
     // Rapids will hash in the transaction hash and the index number in order to make sure each hash is unique
     ss << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
-    return Hash(ss.begin(), ss.end());
+    uint256 proofHash = Hash(ss.begin(), ss.end());
+    LogPrintf("%s - proofhash %s\n", __func__, proofHash.ToString().c_str());
+    return proofHash;
 }
 
 //test hash vs target
