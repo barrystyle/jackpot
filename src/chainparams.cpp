@@ -130,10 +130,21 @@ public:
         networkID = CBaseChainParams::MAIN;
         strNetworkID = "main";
 
-        genesis = CreateGenesisBlock(1542153600, 2465608, 0x1e0ffff0, 1, 0 * COIN);
+        //! nBits = 0x1e0ffff0
+        //! difficulty = 0.000244140625
+        //! target = 00000ffff0000000000000000000000000000000000000000000000000000000
+
+	uint32_t nTime = 1590144900;
+	uint32_t nNonce = 0;
+        while (genesis.GetHash() > uint256("00000ffff0000000000000000000000000000000000000000000000000000000")) {
+           nNonce++;
+           genesis = CreateGenesisBlock(nTime, nNonce, 0x1e0ffff0, 1, 0 * COIN);
+           printf("\rnonce %08x", nNonce);
+        }
+        printf("\nfound hash %s on nonce %08x/%d\n", genesis.GetHash().ToString().c_str(), nNonce, nNonce);
+        genesis = CreateGenesisBlock(nTime, nNonce, 0x1e0ffff0, 1, 0 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256("0x00000d628fa6a8e91fe47554fa6ba00c7aa535fccd430b22214a71f9b7b344a7"));
-        assert(genesis.hashMerkleRoot == uint256("0xb8ac00f6c7839f841a053c5f63e81015d631b81cc633692aab3858021fb9cab3"));
+        assert(consensus.hashGenesisBlock == uint256("0x00000cdfd36d81251ddfb2a688a7634e8c62a989d51cde6bb72e59f7fa2ef201"));
 
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.powLimit   = ~UINT256_ZERO >> 1;
