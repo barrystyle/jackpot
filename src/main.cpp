@@ -1579,98 +1579,46 @@ double ConvertBitsToDouble(unsigned int nBits)
     return dDiff;
 }
 
-int64_t GetTotalValue(int nHeight)
-{
-    int64_t nSubsidy = 0;
-
-    if (nHeight == 0) {
-        nSubsidy = 20000000000 * COIN;
-    } else {
-        nSubsidy =  3567.352 * COIN; 
-        nSubsidy >>= ((nHeight - 1) / 2102400);
-    }
-
-    return nSubsidy;
-}
-
 int64_t GetBlockValue(int nHeight)
 {
     int64_t nSubsidy = 0;
-    const int nHalvingPeriod = 2102400;
 
-    //! unfortunately this must remain to validate the existing
-    //! chain, but we can just disable it at new client height
-    if (IsBurnBlock(nHeight) && nHeight < Params().GetConsensus().height_new_client) {
-        nSubsidy = GetBurnAward(nHeight);
+      if (nHeight == 0) {
+        nSubsidy = 700000 * COIN;
+      } else if (nHeight <= 1440 && nHeight > 0) {
+	nSubsidy = 1 * COIN;
+      } else if (nHeight <= 525600 && nHeight > 1440) {
+        nSubsidy = 25 * COIN;
+      } else if (nHeight <= 788400 && nHeight > 525600) {
+        nSubsidy = 50 * COIN;
+      } else {
+        nSubsidy = 100 * COIN;
+      }
 
-    } else {
+      // Check if we reached the coin max supply.
+      int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+      int64_t nMaxMoney = Params().GetConsensus().nMaxMoneyOut;
 
-        //! existing reward schema
-        if (nHeight == 0) {
-            nSubsidy = 20000000000 * COIN;
-        } else {
-            nSubsidy = 3567.352 * COIN;
-            nSubsidy >>= ((nHeight - 1) / nHalvingPeriod);
-        }
+      if (nMoneySupply + nSubsidy >= nMaxMoney)
+          nSubsidy = nMaxMoney - nMoneySupply;
 
-        //! remove the old restriction on reward with new client
-        if (nHeight > 0 &&
-            nHeight < Params().GetConsensus().height_new_client)
-            nSubsidy *= 0.9;
-    }
+      if (nMoneySupply >= nMaxMoney)
+          nSubsidy = 0;
 
-    if (nMoneySupply + nSubsidy >= Params().GetConsensus().nMaxMoneyOut)
-        nSubsidy = Params().GetConsensus().nMaxMoneyOut - nMoneySupply;
-
-    if (nMoneySupply >= Params().GetConsensus().nMaxMoneyOut)
-        nSubsidy = 0;
-    
-    return nSubsidy;
-}
-
-bool IsBurnBlock(int nHeight)
-{
-    const int nStartBurnBlock = 43199;
-    const int nBurnBlockStep = 43200;
-
-	if(nHeight < nStartBurnBlock)
-		return false;
-	else if( (nHeight-nStartBurnBlock) % nBurnBlockStep == 0)
-		return true;
-	else
-		return false;
-}
-
-int64_t GetBurnAward(int nHeight)
-{
-    int64_t nSubsidy = 0;
-
-	if(IsBurnBlock(nHeight)) {
-        //one month : 43200block, 10% - reward to PoS
-        nSubsidy = 43200 * GetTotalValue(nHeight) * 0.1 + GetTotalValue(nHeight) * 0.3;
-		return nSubsidy; 
-	} else
-		return 0;
+      return nSubsidy;
 }
 
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)
 {
-    int64_t ret = 0;
+        int64_t ret = 0;
 
-    // No rewards till masternode activation.
-    if (nHeight < Params().GetConsensus().height_last_PoW || blockValue == 0)
-        return 0;
+	if (nHeight <= 200) {
+		ret = blockValue  / 100 * 0;
+	} else {
+		ret = blockValue  / 100 * 85;
+	}
 
-    // Check if we reached coin supply
-    if (nHeight < 50) {
-        ret = 0;
-    } else if (nHeight >= Params().GetConsensus().height_new_client) {
-        ret = blockValue * 0.65;
-    } else {
-        ret = blockValue * 0.60 / 0.9; // 60% of block reward
-    }
-
-    return ret;
+        return ret;
 }
 
 bool IsInitialBlockDownload()
