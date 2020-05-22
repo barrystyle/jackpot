@@ -62,8 +62,8 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "Rapids Social Media Network by VYP";
-    const CScript genesisOutputScript = CScript() << ParseHex("04f51fa7f2cf12177576b4294618ded175db33f3c644b68e3fb66f59ea49e02f1eae1afcdb000481226685708661abb4ce72824958ef23994a086d07fff8e1e7d1") << OP_CHECKSIG;
+    const char* pszTimestamp = "Sometimes you hit the jackpot and sometimes the jackpot hits you";
+    const CScript genesisOutputScript = CScript() << ParseHex("0478505c5bc438e08c0c8de26a661bc5a4453378d0b149fbf17cb3e1499b1d3e552fe5faaa253673c5349b461bd964a2ee860c114e9d2b9fdb0328f37ed356ed54") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
@@ -95,11 +95,11 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
-    (0, uint256("0x00000d628fa6a8e91fe47554fa6ba00c7aa535fccd430b22214a71f9b7b344a7"));
+    (0, uint256("0x000003a77c17296ef80130591b732c9e7f686f6e3687c6d30da7de9377a6634a"));
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1542153600, // * UNIX timestamp of last checkpoint block
+    1565765454, // * UNIX timestamp of last checkpoint block
     0,          // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     2000        // * estimated number of transactions per day after checkpoint
@@ -130,21 +130,9 @@ public:
         networkID = CBaseChainParams::MAIN;
         strNetworkID = "main";
 
-        //! nBits = 0x1e0ffff0
-        //! difficulty = 0.000244140625
-        //! target = 00000ffff0000000000000000000000000000000000000000000000000000000
-
-	uint32_t nTime = 1590144900;
-	uint32_t nNonce = 0;
-        while (genesis.GetHash() > uint256("00000ffff0000000000000000000000000000000000000000000000000000000")) {
-           nNonce++;
-           genesis = CreateGenesisBlock(nTime, nNonce, 0x1e0ffff0, 1, 0 * COIN);
-           printf("\rnonce %08x", nNonce);
-        }
-        printf("\nfound hash %s on nonce %08x/%d\n", genesis.GetHash().ToString().c_str(), nNonce, nNonce);
-        genesis = CreateGenesisBlock(nTime, nNonce, 0x1e0ffff0, 1, 0 * COIN);
+        genesis = CreateGenesisBlock(1565765454, 1071713, 0x1e0ffff0, 1, 1 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256("0x00000cdfd36d81251ddfb2a688a7634e8c62a989d51cde6bb72e59f7fa2ef201"));
+        assert(consensus.hashGenesisBlock == uint256("0x000003a77c17296ef80130591b732c9e7f686f6e3687c6d30da7de9377a6634a"));
 
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.powLimit   = ~UINT256_ZERO >> 1;
@@ -167,7 +155,7 @@ public:
         consensus.nTimeSlotLength = 15;
 
         // spork key
-        consensus.strSporkPubKey = "02f8759d6b73bd870ef27863378f275d273580e1f4d9448f441aa879bb352eb183";
+        consensus.strSporkPubKey = "04C1FBF00CBCD62421E67577E8DC64E2F5311BA6FEE0184D723D3264A128D487D8C7E2B18A0F607532C5F8E142DAFDD435DDC512A7B82570CD34087135C0E10AA4";
 
         // height-based activations
         consensus.height_last_PoW = 200;
@@ -213,25 +201,18 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 4-byte int at any alignment.
          */
-        pchMessageStart[0] = 0x61;
-        pchMessageStart[1] = 0xa2;
-        pchMessageStart[2] = 0xf5;
-        pchMessageStart[3] = 0xcb;
-        nDefaultPort = 28732;
+        pchMessageStart[0] = 0xc7;
+        pchMessageStart[1] = 0x7a;
+        pchMessageStart[2] = 0x87;
+        pchMessageStart[3] = 0x78;
+        nDefaultPort = 17771;
 
-        // Rapids addresses start with 'R'
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 61);
-        // Rapids script addresses start with '3'
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 6);
-        // Rapids private keys start with 'K'
-        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 46);
-        // Rapids BIP32 pubkeys start with 'xpub' (Bitcoin defaults)
-        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
-        // Rapids BIP32 prvkeys start with 'xprv' (Bitcoin defaults)
-        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
-        // Rapids BIP44 coin type is '222' (0x800000de)
-        // BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-        base58Prefixes[EXT_COIN_TYPE] = boost::assign::list_of(0x80)(0x00)(0x00)(0xde).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 15); // 7
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 16); // 7
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 43); // J
+        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x02)(0x2D)(0x25)(0x73).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x02)(0x21)(0x31)(0x2B).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_COIN_TYPE] = boost::assign::list_of(0x80)(0x00)(0x1d)(0xfc).convert_to_container<std::vector<unsigned char> >();
 
         convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
 
