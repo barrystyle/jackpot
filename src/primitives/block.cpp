@@ -7,6 +7,7 @@
 #include "primitives/block.h"
 
 #include "hash.h"
+#include "crypto/xevan.h"
 #include "script/standard.h"
 #include "script/sign.h"
 #include "tinyformat.h"
@@ -15,7 +16,9 @@
 
 uint256 CBlockHeader::GetHash() const
 {
-    return HashQuark(BEGIN(nVersion), END(nNonce));
+    uint256 thash;
+    xevan_hash(reinterpret_cast<const char*>(this), (char*)&thash, 80);
+    return thash;
 }
 
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const
